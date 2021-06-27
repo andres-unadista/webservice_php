@@ -20,7 +20,7 @@ if (!isset($_GET['op'])) {
             echo json_encode($articles);
             break;
         case 'getArticle':
-            $idArticle = isset($body['id']) ? $body['id'] : null;
+            $idArticle = isset($body['id']) ? $body['id'] : '';
             if ($idArticle) {
                 $articles = $article->getArticle($idArticle);
                 echo json_encode($articles);
@@ -29,10 +29,10 @@ if (!isset($_GET['op'])) {
             }
             break;
         case 'createArticle':
-            $title = isset($body['title']) ? $body['title'] : null;
-            $description = isset($body['description']) ? $body['description'] : null;
+            $title = isset($body['title']) ? $body['title'] : '';
+            $description = isset($body['description']) ? $body['description'] : '';
 
-            if (isset($title) && isset($description)) {
+            if (!empty($title) && !empty($description)) {
                 $oArticle = new ModelArticle();
                 $oArticle->title = $title;
                 $oArticle->description = $description;
@@ -46,10 +46,30 @@ if (!isset($_GET['op'])) {
                 echo 'Not found param';
             }
             break;
+        case 'udpateArticle':
+            $id = isset($body['id']) ? $body['id'] : '';
+            $title = isset($body['title']) ? $body['title'] : '';
+            $description = isset($body['description']) ? $body['description'] : '';
+
+            if (!empty($title) && !empty($description) && !empty($id)) {
+                $oArticle = new ModelArticle();
+                $oArticle->id = $id;
+                $oArticle->title = $title;
+                $oArticle->description = $description;
+                $resp = $article->updateArticle($oArticle);
+                if ($resp) {
+                    echo json_encode(['response' => 'Success, updated']);
+                }else{
+                    echo json_encode(['response' => 'Not updated']);
+                }
+            } else {
+                echo 'Not found param';
+            }
+            break;
         case 'deleteArticle':
             $id = isset($body['id']) ? $body['id'] : null;
 
-            if (isset($id)) {
+            if (!empty($id)) {
                 $oArticle = new ModelArticle();
                 $oArticle->id = $id;
                 $resp = $article->deleteArticle($oArticle);
